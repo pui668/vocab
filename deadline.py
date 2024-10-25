@@ -1,7 +1,7 @@
 import streamlit as st
 
 def load_html_file(file_path):
-    with open("C:\Users\puipu\Downloads\MyFlow\deadlist.html", 'r', encoding='utf-8') as file:
+    with open(r"C:\Users\puipu\Downloads\MyFlow\deadlist.html", 'r', encoding='utf-8') as file:
         return file.read()
 
 st.title('死期到了')
