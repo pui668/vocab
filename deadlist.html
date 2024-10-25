@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>死期到了</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #ff4757;
+    }
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .option {
+      background-color: #2f3542;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .option:hover {
+      background-color: #57606f;
+    }
+    .option.correct {
+      background-color: #2ed573;
+    }
+    .option.wrong {
+      background-color: #ff6348;
+    }
+    .score, .timer {
+      font-size: 20px;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ffa502;
+    }
+    .hidden {
+      display: none;
+    }
+    .btn {
+      padding: 10px 20px;
+      background-color: #2ed573;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #28a745;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>死期到了</h1>
+    <div class="score" id="scoreDisplay">Score: 0</div>
+    <div class="timer" id="timerDisplay">Time Left: 03:00</div>
+    
+    <div id="quizSection">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+    </div>
+    
+    <div id="scoreSection" class="hidden">
+      <div class="score" id="scoreMessage"></div>
+      <div>死仔好溫書喇 😈</div>
+      <button class="btn" id="restartButton">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    // Quiz questions (synonyms and antonyms)
+    const questions = [
+      { word: "plummet", type: "synonym", options: ["soar", "plunge", "surge", "swift"], answer: "plunge" },
+      { word: "dire", type: "synonym", options: ["predicament", "severe", "plight", "exacerbate"], answer: "severe" },
+      { word: "pioneer", type: "synonym", options: ["follower", "plight", "trailblazer", "deteriorate"], answer: "trailblazer" },
+      { word: "optimistic", type: "antonym", options: ["pessimistic", "affirmative", "foster", "surge"], answer: "pessimistic" },
+      { word: "swift", type: "synonym", options: ["plummet", "rapid", "dire", "detrimental"], answer: "rapid" },
+      { word: "embrace", type: "antonym", options: ["oppose", "enhance", "foster", "dire"], answer: "oppose" },
+      { word: "escalate", type: "synonym", options: ["plummet", "exacerbate", "ameliorate", "severe"], answer: "exacerbate" },
+      { word: "deteriorate", type: "antonym", options: ["enhance", "pioneer", "surge", "soar"], answer: "enhance" },
+      { word: "predicament", type: "synonym", options: ["dilemma", "surge", "swift", "dire"], answer: "dilemma" },
+      { word: "plight", type: "synonym", options: ["rapid", "predicament", "soar", "detrimental"], answer: "predicament" },
+      { word: "severe", type: "synonym", options: ["dire", "swift", "pessimistic", "foster"], answer: "dire" },
+      { word: "undermine", type: "antonym", options: ["enhance", "oppose", "plummet", "deteriorate"], answer: "enhance" },
+      { word: "impede", type: "antonym", options: ["facilitate", "hinder", "exacerbate", "plummet"], answer: "facilitate" },
+      { word: "hinder", type: "antonym", options: ["foster", "facilitate", "oppose", "swift"], answer: "facilitate" },
+      { word: "foster", type: "synonym", options: ["nosedive", "enhance", "plummet", "impede"], answer: "enhance" },
+      { word: "brimming with", type: "synonym", options: ["teeming with", "plight", "dire", "detrimental"], answer: "teeming with" },
+      { word: "a myriad of", type: "synonym", options: ["a multitude of", "hindrance", "swift", "commonplace"], answer: "a multitude of" },
+      { word: "prevail", type: "antonym", options: ["with no avail", "plummet", "dire", "swift"], answer: "with no avail" },
+      { word: "sophisticated", type: "synonym", options: ["advanced", "dilemma", "detrimental", "severe"], answer: "advanced" },
+      { word: "state-of-the-art", type: "synonym", options: ["sophisticated", "plight", "severe", "plummet"], answer: "sophisticated" },
+      { word: "detrimental", type: "synonym", options: ["harmful", "swift", "severe", "plummet"], answer: "harmful" },
+      { word: "hindrance", type: "synonym", options: ["obstacle", "surge", "detrimental", "plummet"], answer: "obstacle" },
+      { word: "commonplace", type: "synonym", options: ["prevalent", "dire", "swift", "foster"], answer: "prevalent" },
+      { word: "prevalent", type: "synonym", options: ["pervasive", "dilemma", "plummet", "detrimental"], answer: "pervasive" },
+      { word: "trailblazer", type: "synonym", options: ["pioneer", "foster", "dire", "swift"], answer: "pioneer" },
+      { word: "rapid", type: "synonym", options: ["swift", "dire", "pessimistic", "plummet"], answer: "swift" },
+      { word: "surge", type: "synonym", options: ["soar", "plummet", "swift", "pessimistic"], answer: "soar" },
+      { word: "sarcastic", type: "antonym", options: ["affirmative", "pessimistic", "dire", "foster"], answer: "affirmative" },
+      { word: "affirmative", type: "antonym", options: ["be adverse to", "facilitate", "swift", "plummet"], answer: "be adverse to" },
+      { word: "object", type: "antonym", options: ["embrace", "plummet", "detrimental", "dire"], answer: "embrace" },
+      { word: "alleviate", type: "synonym", options: ["alleviate", "exacerbate", "detrimental", "facilitate"], answer: "alleviate" },
+      { word: "mitigate", type: "synonym", options: ["mitigate", "impede", "plummet", "pioneer"], answer: "mitigate" },
+      { word: "remedy", type: "synonym", options: ["remedy", "detrimental", "deteriorate", "surge"], answer: "remedy" },
+      { word: "panacea", type: "synonym", options: ["panacea", "pessimistic", "plummet", "swift"], answer: "panacea" },
+      { word: "antidote", type: "synonym", options: ["antidote", "plummet", "pioneer", "detrimental"], answer: "antidote" }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 180; // 3 minutes in seconds
+
+    // HTML elements
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const quizSection = document.getElementById('quizSection');
+    const scoreSection = document.getElementById('scoreSection');
+    const scoreMessage = document.getElementById('scoreMessage');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const restartButton = document.getElementById('restartButton');
+
+    // Load a question
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionElement.textContent = `${currentQuestion.word} (${currentQuestion.type})`;
+      optionsElement.innerHTML = '';
+
+      currentQuestion.options.forEach(option => {
+        const optionElement = document.createElement('div');
+        optionElement.classList.add('option');
+        optionElement.textContent = option;
+        optionElement.addEventListener('click', () => handleAnswer(option));
+        optionsElement.appendChild(optionElement);
+      });
+    }
+
+    // Handle the selected answer
+    function handleAnswer(selectedOption) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = selectedOption === currentQuestion.answer;
+
+      // Highlight the selected option
+      const optionDivs = document.querySelectorAll('.option');
+      optionDivs.forEach(div => {
+        if (div.textContent === currentQuestion.answer) {
+          div.classList.add('correct');
+        } else if (div.textContent === selectedOption) {
+          div.classList.add(isCorrect ? 'correct' : 'wrong');
+        }
+        div.style.pointerEvents = 'none'; // Disable further clicks
+      });
+
+      // Update score
+      if (isCorrect) {
+        score++;
+        scoreDisplay.textContent = `Score: ${score}`;
+      }
+
+      // Move to the next question after a short delay
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          loadQuestion();
+        } else {
+          showScore();
+        }
+      }, 1000);
+    }
+
+    // Show the score at the end
+    function showScore() {
+      clearInterval(timer); // Stop the timer
+      quizSection.classList.add('hidden');
+      scoreSection.classList.remove('hidden');
+      scoreMessage.textContent = `You scored ${score} out of ${questions.length}!`;
+    }
+
+    // Timer countdown function
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `Time Left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          showScore(); // Time's up, show the score!
+        }
+      }, 1000);
+    }
+
+    // Restart the quiz
+    restartButton.addEventListener('click', () => {
+      currentQuestionIndex = 0;
+      score = 0;
+      timeLeft = 180; // Reset the timer
+      scoreDisplay.textContent = 'Score: 0';
+      quizSection.classList.remove('hidden');
+      scoreSection.classList.add('hidden');
+      loadQuestion();
+      startTimer();
+    });
+
+    // Start the quiz by loading the first question and starting the timer
+    loadQuestion();
+    startTimer();
+  </script>
+
+</body>
+</html>
