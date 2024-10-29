@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>死期到了 - Quiz</title>
   <style>
     body {
@@ -98,39 +98,48 @@
   </div>
 
   <script>
-    // Quiz questions (synonyms and antonyms)
+    // Utility function to shuffle an array (Fisher-Yates Shuffle)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Corrected Quiz questions (each with only one correct answer and three wrong options)
     const questions = [
       { word: "plummet", type: "synonym", options: ["plunge", "soar", "surge", "dwindle"], answer: "plunge" },
       { word: "plunge", type: "synonym", options: ["plummet", "soar", "dwindle", "rapid"], answer: "plummet" },
       { word: "nose dive", type: "synonym", options: ["plummet", "surge", "soar", "dwindle"], answer: "plummet" },
-      { word: "dwindle", type: "synonym", options: ["plummet", "decrease", "surge", "soar"], answer: "decrease" },
+      { word: "dwindle", type: "synonym", options: ["reduce", "increase", "surge", "soar"], answer: "reduce" },
       { word: "surge", type: "synonym", options: ["soar", "plummet", "rapid", "swift"], answer: "soar" },
       { word: "soar", type: "synonym", options: ["surge", "plunge", "plummet", "rapid"], answer: "surge" },
       { word: "rapid", type: "synonym", options: ["swift", "dwindle", "dire", "plummet"], answer: "swift" },
-      { word: "swift", type: "synonym", options: ["rapid", "dire", "plummet", "dwindle"], answer: "rapid" },
-      { word: "predicament", type: "synonym", options: ["plight", "dilemma", "dire", "severe"], answer: "plight" },
-      { word: "plight", type: "synonym", options: ["predicament", "dilemma", "severe", "dire"], answer: "predicament" },
-      { word: "dilemma", type: "synonym", options: ["predicament", "plight", "severe", "dire"], answer: "predicament" },
-      { word: "dire", type: "synonym", options: ["severe", "plight", "predicament", "dilemma"], answer: "severe" },
-      { word: "exacerbate", type: "synonym", options: ["deteriorate", "escalate", "ameliorate", "severe"], answer: "deteriorate" },
-      { word: "deteriorate", type: "synonym", options: ["exacerbate", "escalate", "ameliorate", "severe"], answer: "exacerbate" },
-      { word: "escalate", type: "synonym", options: ["exacerbate", "deteriorate", "ameliorate", "severe"], answer: "exacerbate" },
+      { word: "swift", type: "synonym", options: ["rapid", "steady", "plummet", "dwindle"], answer: "rapid" },
+      { word: "predicament", type: "synonym", options: ["plight", "solution", "success", "joy"], answer: "plight" },
+      { word: "plight", type: "synonym", options: ["predicament", "celebration", "achievement", "happiness"], answer: "predicament" },
+      { word: "dilemma", type: "synonym", options: ["predicament", "celebration", "achievement", "clarity"], answer: "predicament" },
+      { word: "dire", type: "synonym", options: ["severe", "joyful", "fortunate", "easy"], answer: "severe" },
+      { word: "exacerbate", type: "synonym", options: ["deteriorate", "escalate", "ameliorate", "reduce"], answer: "deteriorate" },
+      { word: "deteriorate", type: "synonym", options: ["exacerbate", "improve", "ameliorate", "stagnate"], answer: "exacerbate" },
+      { word: "escalate", type: "synonym", options: ["exacerbate", "reduce", "ameliorate", "stagnate"], answer: "exacerbate" },
       { word: "measure", type: "synonym", options: ["initiative", "scheme", "policy", "undermine"], answer: "initiative" },
-      { word: "undermine", type: "synonym", options: ["hinder", "impede", "ameliorate", "elevate"], answer: "hinder" },
-      { word: "impede", type: "synonym", options: ["hinder", "undermine", "foster", "facilitate"], answer: "hinder" },
+      { word: "undermine", type: "synonym", options: ["hinder", "support", "encourage", "elevate"], answer: "hinder" },
+      { word: "impede", type: "synonym", options: ["hinder", "support", "foster", "facilitate"], answer: "hinder" },
       { word: "ameliorate", type: "synonym", options: ["enhance", "foster", "elevate", "facilitate"], answer: "enhance" },
-      { word: "facilitate", type: "synonym", options: ["ameliorate", "hinder", "impede", "detrimental"], answer: "ameliorate" },
+      { word: "facilitate", type: "synonym", options: ["ameliorate", "hinder", "impede", "obstruct"], answer: "ameliorate" },
       { word: "state-of-the-art", type: "synonym", options: ["advanced", "deteriorate", "sophisticated", "dwindle"], answer: "sophisticated" },
-      { word: "brimming with", type: "synonym", options: ["teeming with", "a myriad of", "a multitude of", "obstacle"], answer: "teeming with" },
-      { word: "a myriad of", type: "synonym", options: ["a multitude of", "teeming with", "detrimental", "obstacle"], answer: "a multitude of" },
-      { word: "drawback", type: "synonym", options: ["obstacle", "hindrance", "detrimental", "pioneer"], answer: "obstacle" },
-      { word: "detrimental", type: "synonym", options: ["harmful", "commonplace", "prevalent", "pervasive"], answer: "harmful" },
-      { word: "commonplace", type: "synonym", options: ["prevalent", "pervasive", "prevail", "detrimental"], answer: "prevalent" },
+      { word: "brimming with", type: "synonym", options: ["teeming with", "scarce of", "a multitude of", "obstacle"], answer: "teeming with" },
+      { word: "a myriad of", type: "synonym", options: ["a multitude of", "scarce of", "detrimental", "obstacle"], answer: "a multitude of" },
+      { word: "drawback", type: "synonym", options: ["obstacle", "benefit", "detrimental", "pioneer"], answer: "obstacle" },
+      { word: "detrimental", type: "synonym", options: ["harmful", "beneficial", "prevalent", "pervasive"], answer: "harmful" },
+      { word: "commonplace", type: "synonym", options: ["prevalent", "extraordinary", "prevail", "rare"], answer: "prevalent" },
       { word: "prevail", type: "antonym", options: ["with no avail", "embrace", "be adverse to", "oppose"], answer: "with no avail" },
       { word: "oppose", type: "antonym", options: ["embrace", "object", "neutral", "sarcastic"], answer: "embrace" },
       { word: "affirmative", type: "antonym", options: ["be adverse to", "oppose", "critical", "sarcastic"], answer: "be adverse to" },
       { word: "optimistic", type: "antonym", options: ["pessimistic", "neutral", "object", "critical"], answer: "pessimistic" },
-      { word: "significant", type: "synonym", options: ["substantial", "crucial", "essential", "pivotal"], answer: "substantial" },
+      { word: "significant", type: "synonym", options: ["substantial", "trivial", "essential", "pivotal"], answer: "substantial" },
       { word: "pioneer", type: "synonym", options: ["trailblazer", "innovator", "visionary", "leader"], answer: "trailblazer" }
     ];
 
@@ -151,7 +160,7 @@
 
     // Function to shuffle the questions for randomness
     function shuffleQuestions(array) {
-      return array.sort(() => Math.random() - 0.5);
+      return shuffleArray(array);
     }
 
     // Load a question
@@ -160,7 +169,10 @@
       questionElement.textContent = `${currentQuestion.word} (${currentQuestion.type})`;
       optionsElement.innerHTML = '';
 
-      currentQuestion.options.forEach(option => {
+      // Create a shuffled copy of the options
+      const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+      shuffledOptions.forEach(option => {
         const optionElement = document.createElement('div');
         optionElement.classList.add('option');
         optionElement.textContent = option;
