@@ -207,11 +207,11 @@
     // Function to generate translation distractors: pick random Chinese terms not matching any translation
     function generateTranslationDistractors(correctChinese) {
       // A pool of plausible but incorrect Chinese translations
-      const emotionPool = ["關鍵嘅", "諷刺嘅", "反諷嘅", "冷感嘅", "中立嘅", "樂觀嘅", "悲觀嘅", "熱情嘅", "無動於衷嘅", "自信嘅", "懷疑嘅", "同情心嘅",  "憤世嫉俗嘅"];
+      const emotionPool = ["樂觀嘅", "悲觀嘅", "熱情嘅", "無動於衷嘅", "自信嘅", "懷疑嘅", "同情心嘅", "憤世嫉俗嘅", "關鍵嘅", "諷刺嘅", "反諷嘅", "冷感嘅", "中立嘅"];
       // Exclude the correctChinese and shuffle the pool
-      const filteredPool = chinesePool.filter(ch => ch !== correctChinese);
+      const filteredPool = emotionPool.filter(ch => ch !== correctChinese);
       shuffleArray(filteredPool);
-      // Pick first 3 as distractors
+      // Return first three distractors
       return filteredPool.slice(0, 3);
     }
 
@@ -230,7 +230,7 @@
           const synonyms = words.filter(w => w !== word);
           correctSynonym = synonyms[Math.floor(Math.random() * synonyms.length)];
         } else {
-          // If only one word in the category, consider skipping or using the same word
+          // If only one word in the category, consider skipping
           // Here, we'll use the same word to ensure at least one correct answer
           correctSynonym = word;
         }
@@ -290,25 +290,30 @@
 
     // Event listener for Start Button
     startButton.addEventListener('click', () => {
-      startSection.classList.add('hidden');
-      quizSection.classList.remove('hidden');
-      loadQuestion();
-      startTimer();
+      startSection.classList.add('hidden');          // Hide Start Screen
+      quizSection.classList.remove('hidden');        // Show Quiz Section
+      loadQuestion();                                // Load First Question
+      startTimer();                                  // Start Timer
     });
 
     // Load a question
     function loadQuestion() {
+      if (currentQuestionIndex >= questions.length) {
+        showScore();
+        return;
+      }
+
       const currentQuestion = questions[currentQuestionIndex];
       
       if (currentQuestion.type === "synonym") {
-        questionElement.textContent = `Find a synonym for "${currentQuestion.word}".`;
+        questionElement.textContent = `Find a Synonym (同義詞) for "${currentQuestion.word}".`;
       } else if (currentQuestion.type === "antonym") {
-        questionElement.textContent = `Find an antonym for "${currentQuestion.word}".`;
+        questionElement.textContent = `Find an Antonym (反義詞) for "${currentQuestion.word}".`;
       } else if (currentQuestion.type === "translate") {
-        questionElement.textContent = `Choose the correct Chinese translation for "${currentQuestion.word}".`;
+        questionElement.textContent = `Choose the correct Chinese for "${currentQuestion.word}".`;
       }
 
-      // Shuffle the options for the current question
+      // Shuffle the options for the current question to ensure randomness
       const shuffledOptions = shuffleArray([...currentQuestion.options]);
 
       // Clear previous options
@@ -329,7 +334,7 @@
       const currentQuestion = questions[currentQuestionIndex];
       const isCorrect = selectedOption === currentQuestion.answer;
 
-      // Highlight the selected option
+      // Highlight the correct answer
       const optionDivs = document.querySelectorAll('.option');
       optionDivs.forEach(div => {
         if (div.textContent === currentQuestion.answer) {
@@ -349,11 +354,7 @@
       // Move to the next question after a short delay
       setTimeout(() => {
         currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-          loadQuestion();
-        } else {
-          showScore();
-        }
+        loadQuestion();
       }, 1000);
     }
 
@@ -396,8 +397,6 @@
       startTimer();
     });
 
-    // Start the quiz by loading the first question and starting the timer
-    // This is now triggered by the Start Button
   </script>
 
 </body>
