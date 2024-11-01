@@ -152,8 +152,8 @@
       M: ["drawback", "obstacle", "hindrance"],
       N: ["detrimental"],
       O: ["commonplace", "prevalent", "pervasive"],
-      P: ["prevail"],
-      Q: ["with no avail"],
+      P: ["prevail", "succeed", "overcome"],
+      Q: ["with no avail", "without success", "ineffective"],
       R: ["be adverse to", "oppose", "object", "be to differ"],
       S: ["embrace", "affirmative", "be of the same mind"],
       T: ["disparity", "contrary"],
@@ -165,7 +165,7 @@
     const translationMap = {
       "critical": "關鍵嘅",
       "sarcastic": "諷刺嘅",
-      "ironic": "反諷嘅",
+      "ironic": "反諷/反差嘅",
       "indifferent": "冷感嘅",
       "neutral": "中立嘅",
       "optimistic": "樂觀嘅",
@@ -207,7 +207,7 @@
     // Function to generate translation distractors: pick random Chinese terms not matching any translation
     function generateTranslationDistractors(correctChinese) {
       // A pool of plausible but incorrect Chinese translations
-      const emotionPool = ["樂觀嘅", "悲觀嘅", "熱情嘅", "無動於衷嘅", "自信嘅", "懷疑嘅", "同情心嘅", "憤世嫉俗嘅", "關鍵嘅", "諷刺嘅", "反諷嘅", "冷感嘅", "中立嘅"];
+      const emotionPool = ["樂觀嘅", "悲觀嘅", "熱情嘅", "無動於衷嘅", "自信嘅", "懷疑嘅", "同情心嘅", "憤世嫉俗嘅", "關鍵嘅", "諷刺嘅", "反諷/反差嘅", "冷感嘅", "中立嘅"];
       // Exclude the correctChinese and shuffle the pool
       const filteredPool = emotionPool.filter(ch => ch !== correctChinese);
       shuffleArray(filteredPool);
