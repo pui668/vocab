@@ -22,7 +22,7 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       width: 100%;
-      max-width: 600px;
+      max-width: 700px;
       text-align: center;
     }
     h1 {
@@ -107,41 +107,139 @@
       return array;
     }
 
-    // Corrected Quiz questions (each with only one correct answer and three wrong options)
-    const questions = [
-      { word: "plummet", type: "synonym", options: ["plunge", "soar", "surge", "dwindle"], answer: "plunge" },
-      { word: "plunge", type: "synonym", options: ["plummet", "soar", "dwindle", "rapid"], answer: "plummet" },
-      { word: "nose dive", type: "synonym", options: ["plummet", "surge", "soar", "dwindle"], answer: "plummet" },
-      { word: "dwindle", type: "synonym", options: ["reduce", "increase", "surge", "soar"], answer: "reduce" },
-      { word: "surge", type: "synonym", options: ["soar", "plummet", "rapid", "swift"], answer: "soar" },
-      { word: "soar", type: "synonym", options: ["surge", "plunge", "plummet", "rapid"], answer: "surge" },
-      { word: "rapid", type: "synonym", options: ["swift", "dwindle", "dire", "plummet"], answer: "swift" },
-      { word: "swift", type: "synonym", options: ["rapid", "steady", "plummet", "dwindle"], answer: "rapid" },
-      { word: "predicament", type: "synonym", options: ["plight", "solution", "success", "joy"], answer: "plight" },
-      { word: "plight", type: "synonym", options: ["predicament", "celebration", "achievement", "happiness"], answer: "predicament" },
-      { word: "dilemma", type: "synonym", options: ["predicament", "celebration", "achievement", "clarity"], answer: "predicament" },
-      { word: "dire", type: "synonym", options: ["severe", "joyful", "fortunate", "easy"], answer: "severe" },
-      { word: "exacerbate", type: "synonym", options: ["deteriorate", "escalate", "ameliorate", "reduce"], answer: "deteriorate" },
-      { word: "deteriorate", type: "synonym", options: ["exacerbate", "improve", "ameliorate", "stagnate"], answer: "exacerbate" },
-      { word: "escalate", type: "synonym", options: ["exacerbate", "reduce", "ameliorate", "stagnate"], answer: "exacerbate" },
-      { word: "measure", type: "synonym", options: ["initiative", "scheme", "policy", "undermine"], answer: "initiative" },
-      { word: "undermine", type: "synonym", options: ["hinder", "support", "encourage", "elevate"], answer: "hinder" },
-      { word: "impede", type: "synonym", options: ["hinder", "support", "foster", "facilitate"], answer: "hinder" },
-      { word: "ameliorate", type: "synonym", options: ["enhance", "foster", "elevate", "facilitate"], answer: "enhance" },
-      { word: "facilitate", type: "synonym", options: ["ameliorate", "hinder", "impede", "obstruct"], answer: "ameliorate" },
-      { word: "state-of-the-art", type: "synonym", options: ["advanced", "deteriorate", "sophisticated", "dwindle"], answer: "sophisticated" },
-      { word: "brimming with", type: "synonym", options: ["teeming with", "scarce of", "a multitude of", "obstacle"], answer: "teeming with" },
-      { word: "a myriad of", type: "synonym", options: ["a multitude of", "scarce of", "detrimental", "obstacle"], answer: "a multitude of" },
-      { word: "drawback", type: "synonym", options: ["obstacle", "benefit", "detrimental", "pioneer"], answer: "obstacle" },
-      { word: "detrimental", type: "synonym", options: ["harmful", "beneficial", "prevalent", "pervasive"], answer: "harmful" },
-      { word: "commonplace", type: "synonym", options: ["prevalent", "extraordinary", "prevail", "rare"], answer: "prevalent" },
-      { word: "prevail", type: "antonym", options: ["with no avail", "embrace", "be adverse to", "oppose"], answer: "with no avail" },
-      { word: "oppose", type: "antonym", options: ["embrace", "object", "neutral", "sarcastic"], answer: "embrace" },
-      { word: "affirmative", type: "antonym", options: ["be adverse to", "oppose", "critical", "sarcastic"], answer: "be adverse to" },
-      { word: "optimistic", type: "antonym", options: ["pessimistic", "neutral", "object", "critical"], answer: "pessimistic" },
-      { word: "significant", type: "synonym", options: ["substantial", "trivial", "essential", "pivotal"], answer: "substantial" },
-      { word: "pioneer", type: "synonym", options: ["trailblazer", "innovator", "visionary", "leader"], answer: "trailblazer" }
-    ];
+    // Categories from A to W (excluding U) with synonyms
+    const categoryMap = {
+      A: ["plummet", "plunge", "nose dive", "dwindle"],
+      B: ["surge", "soar"],
+      C: ["rapid", "swift"],
+      D: ["predicament", "plight", "dilemma"],
+      E: ["dire", "severe"],
+      F: ["exacerbate", "deteriorate", "escalate"],
+      G: ["measure", "initiative", "scheme", "policy"],
+      H: ["undermine", "hinder", "impede"],
+      I: ["ameliorate", "enhance", "foster", "elevate", "facilitate"],
+      J: ["state-of-the-art", "advanced", "sophisticated"],
+      K: ["brimming with", "teeming with"],
+      L: ["a myriad of", "a multitude of"],
+      M: ["drawback", "obstacle", "hindrance"],
+      N: ["detrimental"],
+      O: ["commonplace", "prevalent", "pervasive"],
+      P: ["prevail"],
+      Q: ["with no avail"],
+      R: ["be adverse to", "oppose", "object", "be to differ"],
+      S: ["embrace", "affirmative", "be of the same mind"],
+      T: ["disparity", "contrary"],
+      V: ["significant", "substantial", "crucial", "essential", "pivotal"],
+      W: ["pioneer", "trailblazer"]
+    };
+
+    // Translation mapping for category U
+    const translationMap = {
+      "critical": "關鍵嘅",
+      "sarcastic": "諷刺嘅",
+      "ironic": "反諷嘅",
+      "indifferent": "冷感嘅",
+      "neutral": "中立嘅",
+      "optimistic": "樂觀嘅",
+      "pessimistic": "悲觀嘅",
+      "enthusiastic": "熱情嘅",
+      "apathetic": "無動於衷嘅",
+      "confident": "自信嘅",
+      "skeptical": "懷疑嘅",
+      "empathetic": "同情心嘅",
+      "cynical": "憤世嫉俗嘅"
+    };
+  
+
+
+    // Collecting all words from categories A-W excluding U
+    const allSynonymWords = [];
+    for (let category in categoryMap) {
+      if (category !== "U") {
+        categoryMap[category].forEach(word => allSynonymWords.push(word));
+      }
+    }
+
+    // Function to generate synonym distractors: pick words from other categories
+    function generateSynonymDistractors(correctCategory, excludeWord) {
+      // Get all words from categories other than the correct category
+      let otherWords = [];
+      for (let category in categoryMap) {
+        if (category !== correctCategory && category !== "U") { // Exclude U
+          categoryMap[category].forEach(word => {
+            if (word !== excludeWord) {
+              otherWords.push(word);
+            }
+          });
+        }
+      }
+      // Shuffle and select first 3
+      shuffleArray(otherWords);
+      return otherWords.slice(0, 3);
+    }
+
+    // Function to generate translation distractors: pick random Chinese terms not matching any translation
+    function generateTranslationDistractors(correctChinese) {
+      // A pool of plausible but incorrect Chinese translations
+      const emotionPool = ["關鍵嘅", "諷刺嘅", "反諷嘅", "冷感嘅", "中立嘅", "樂觀嘅", "悲觀嘅", "熱情嘅", "無動於衷嘅", "自信嘅", "懷疑嘅", "同情心嘅",  "憤世嫉俗嘅"];
+      // Exclude the correctChinese and shuffle the pool
+      const filteredPool = chinesePool.filter(ch => ch !== correctChinese);
+      shuffleArray(filteredPool);
+      // Pick first 3 as distractors
+      return filteredPool.slice(0, 3);
+    }
+
+    // Generate the questions array
+    const questions = [];
+
+    // Synonym Questions
+    for (let category in categoryMap) {
+      if (category === "U") continue; // Skip category U for now
+      const words = categoryMap[category];
+      words.forEach(word => {
+        // Pick a correct synonym (another word from the same category)
+        let correctSynonym = null;
+        if (words.length > 1) {
+          // Select a different word from the same category randomly
+          const synonyms = words.filter(w => w !== word);
+          correctSynonym = synonyms[Math.floor(Math.random() * synonyms.length)];
+        } else {
+          // If only one word in the category, use the same word as the correct answer
+          // Alternatively, skip quiz questions for single-word categories
+          // Here, we'll use the same word to ensure at least one correct answer
+          correctSynonym = word;
+        }
+
+        // Generate distractors
+        const distractors = generateSynonymDistractors(category, word);
+
+        // Create question object
+        const question = {
+          word: word,
+          type: "synonym",
+          options: [correctSynonym, ...distractors],
+          answer: correctSynonym
+        };
+
+        questions.push(question);
+      });
+    }
+
+    // Translation Questions (Category U)
+    for (let word in translationMap) {
+      const correctChinese = translationMap[word];
+      const distractors = generateTranslationDistractors(correctChinese);
+      const question = {
+        word: word,
+        type: "translate",
+        options: [correctChinese, ...distractors],
+        answer: correctChinese
+      };
+      questions.push(question);
+    }
+
+    // Shuffle the entire questions array to randomize question order
+    shuffleArray(questions);
 
     let currentQuestionIndex = 0;
     let score = 0;
@@ -158,20 +256,23 @@
     const timerDisplay = document.getElementById('timerDisplay');
     const restartButton = document.getElementById('restartButton');
 
-    // Function to shuffle the questions for randomness
-    function shuffleQuestions(array) {
-      return shuffleArray(array);
-    }
-
     // Load a question
     function loadQuestion() {
       const currentQuestion = questions[currentQuestionIndex];
-      questionElement.textContent = `${currentQuestion.word} (${currentQuestion.type})`;
-      optionsElement.innerHTML = '';
+      
+      if (currentQuestion.type === "synonym") {
+        questionElement.textContent = `Find a synonym for "${currentQuestion.word}".`;
+      } else if (currentQuestion.type === "translate") {
+        questionElement.textContent = `Choose the correct Chinese translation for "${currentQuestion.word}".`;
+      }
 
-      // Create a shuffled copy of the options
+      // Shuffle the options for the current question
       const shuffledOptions = shuffleArray([...currentQuestion.options]);
 
+      // Clear previous options
+      optionsElement.innerHTML = '';
+
+      // Create and append option elements
       shuffledOptions.forEach(option => {
         const optionElement = document.createElement('div');
         optionElement.classList.add('option');
@@ -186,7 +287,7 @@
       const currentQuestion = questions[currentQuestionIndex];
       const isCorrect = selectedOption === currentQuestion.answer;
 
-      // Highlight the selected option
+      // Highlight the correct answer
       const optionDivs = document.querySelectorAll('.option');
       optionDivs.forEach(div => {
         if (div.textContent === currentQuestion.answer) {
@@ -197,7 +298,7 @@
         div.style.pointerEvents = 'none'; // Disable further clicks
       });
 
-      // Update score
+      // Update score if correct
       if (isCorrect) {
         score++;
         scoreDisplay.textContent = `Score: ${score}`;
@@ -247,14 +348,13 @@
       scoreSection.classList.add('hidden');
       
       // Shuffle questions again for randomness
-      shuffleQuestions(questions);
+      shuffleArray(questions);
       
       loadQuestion();
       startTimer();
     });
 
-    // Start the quiz by shuffling the questions and loading the first question
-    shuffleQuestions(questions);
+    // Start the quiz by loading the first question and starting the timer
     loadQuestion();
     startTimer();
   </script>
