@@ -18,11 +18,11 @@
     }
     .container {
       background-color: #1e1e1e;
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       width: 100%;
-      max-width: 700px;
+      max-width: 800px;
       text-align: center;
     }
     h1 {
@@ -37,23 +37,25 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-bottom: 20px;
     }
     .option {
       background-color: #2f3542;
       color: white;
-      padding: 10px;
+      padding: 15px;
       border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.3s;
+      font-size: 18px;
     }
     .option:hover {
       background-color: #57606f;
     }
     .option.correct {
-      background-color: #2ed573;
+      background-color: #2ed573 !important;
     }
     .option.wrong {
-      background-color: #ff6348;
+      background-color: #ff6348 !important;
     }
     .score, .timer {
       font-size: 20px;
@@ -65,34 +67,60 @@
       display: none;
     }
     .btn {
-      padding: 10px 20px;
+      padding: 12px 25px;
       background-color: #2ed573;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 20px;
+      font-size: 18px;
+      transition: background-color 0.3s;
     }
     .btn:hover {
       background-color: #28a745;
+    }
+    /* Additional Styling for Start Screen */
+    #startSection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    #startSection h2 {
+      font-size: 22px;
+      color: #1e90ff;
+    }
+    #startSection p {
+      font-size: 18px;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>死期到了</h1>
-    <div class="score" id="scoreDisplay">Score: 0</div>
-    <div class="timer" id="timerDisplay">Time Left: 03:00</div>
-    
-    <div id="quizSection">
+    <!-- Start Screen -->
+    <div id="startSection">
+      <h1>死期到了 - Quiz</h1>
+      <h2>Welcome to the Vocabulary Quiz!</h2>
+      <p><strong>Synonym (同義詞):</strong> Words that have similar or identical meanings.</p>
+      <p><strong>Antonym (反義詞):</strong> Words that have opposite meanings.</p>
+      <button class="btn" id="startButton">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Section -->
+    <div id="quizSection" class="hidden">
+      <div class="score" id="scoreDisplay">Score: 0</div>
+      <div class="timer" id="timerDisplay">Time Left: 03:00</div>
+      
       <div class="question" id="question"></div>
       <div class="options" id="options"></div>
     </div>
     
+    <!-- Score Section -->
     <div id="scoreSection" class="hidden">
       <div class="score" id="scoreMessage"></div>
-      <div>死仔好溫書喇 😈</div>
+      <div>You did great studying! 😈</div>
       <button class="btn" id="restartButton">Play Again</button>
     </div>
   </div>
@@ -149,8 +177,6 @@
       "empathetic": "同情心嘅",
       "cynical": "憤世嫉俗嘅"
     };
-  
-
 
     // Collecting all words from categories A-W excluding U
     const allSynonymWords = [];
@@ -204,8 +230,7 @@
           const synonyms = words.filter(w => w !== word);
           correctSynonym = synonyms[Math.floor(Math.random() * synonyms.length)];
         } else {
-          // If only one word in the category, use the same word as the correct answer
-          // Alternatively, skip quiz questions for single-word categories
+          // If only one word in the category, consider skipping or using the same word
           // Here, we'll use the same word to ensure at least one correct answer
           correctSynonym = word;
         }
@@ -213,11 +238,14 @@
         // Generate distractors
         const distractors = generateSynonymDistractors(category, word);
 
+        // Combine correct answer with distractors and shuffle
+        const options = shuffleArray([correctSynonym, ...distractors]);
+
         // Create question object
         const question = {
           word: word,
           type: "synonym",
-          options: [correctSynonym, ...distractors],
+          options: options,
           answer: correctSynonym
         };
 
@@ -229,10 +257,12 @@
     for (let word in translationMap) {
       const correctChinese = translationMap[word];
       const distractors = generateTranslationDistractors(correctChinese);
+      // Combine correct answer with distractors and shuffle
+      const options = shuffleArray([correctChinese, ...distractors]);
       const question = {
         word: word,
         type: "translate",
-        options: [correctChinese, ...distractors],
+        options: options,
         answer: correctChinese
       };
       questions.push(question);
@@ -247,6 +277,8 @@
     let timeLeft = 180; // 3 minutes in seconds
 
     // HTML elements
+    const startSection = document.getElementById('startSection');
+    const startButton = document.getElementById('startButton');
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
     const quizSection = document.getElementById('quizSection');
@@ -256,12 +288,22 @@
     const timerDisplay = document.getElementById('timerDisplay');
     const restartButton = document.getElementById('restartButton');
 
+    // Event listener for Start Button
+    startButton.addEventListener('click', () => {
+      startSection.classList.add('hidden');
+      quizSection.classList.remove('hidden');
+      loadQuestion();
+      startTimer();
+    });
+
     // Load a question
     function loadQuestion() {
       const currentQuestion = questions[currentQuestionIndex];
       
       if (currentQuestion.type === "synonym") {
         questionElement.textContent = `Find a synonym for "${currentQuestion.word}".`;
+      } else if (currentQuestion.type === "antonym") {
+        questionElement.textContent = `Find an antonym for "${currentQuestion.word}".`;
       } else if (currentQuestion.type === "translate") {
         questionElement.textContent = `Choose the correct Chinese translation for "${currentQuestion.word}".`;
       }
@@ -287,7 +329,7 @@
       const currentQuestion = questions[currentQuestionIndex];
       const isCorrect = selectedOption === currentQuestion.answer;
 
-      // Highlight the correct answer
+      // Highlight the selected option
       const optionDivs = document.querySelectorAll('.option');
       optionDivs.forEach(div => {
         if (div.textContent === currentQuestion.answer) {
@@ -338,7 +380,7 @@
       }, 1000);
     }
 
-    // Restart the quiz
+    // Event listener for Restart Button
     restartButton.addEventListener('click', () => {
       currentQuestionIndex = 0;
       score = 0;
@@ -355,8 +397,7 @@
     });
 
     // Start the quiz by loading the first question and starting the timer
-    loadQuestion();
-    startTimer();
+    // This is now triggered by the Start Button
   </script>
 
 </body>
